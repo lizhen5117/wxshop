@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:system.properties</value>
+			</list>
+		</property>
+		<property name="fileEncoding" value="UTF-8" />
+	</bean>
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<!--连接池中保留的最小连接数。 -->
+		<property name="minPoolSize" value="${jdbc.minPoolSize}" />
+		<!--连接池中保留的最大连接数。Default: 15 -->
+		<property name="maxPoolSize" value="${jdbc.maxPoolSize}" />
+		<!--最大空闲时间,1800秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
+		<property name="maxIdleTime" value="${jdbc.maxIdle}" />
+		<!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 3 -->
+		<property name="acquireIncrement" value="${jdbc.acquireIncrement}" />
+		<property name="initialPoolSize" value="${jdbc.initialPoolSize}" />
+	</bean>
+	<!-- 从c3p0数据源中抽取出JDBC的代理对象 -->
+	<bean id="nativeJdbcExtractor"
+		class="org.springframework.jdbc.support.nativejdbc.C3P0NativeJdbcExtractor"
+		lazy-init="true" />
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<aop:config proxy-target-class="true">
+		<aop:advisor pointcut="execution(* com.dihaitech.wxshop.service.*.*(..))"
+			advice-ref="txAdvice" />
+	</aop:config>
+
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" />
+			<tx:method name="edit*" />
+			<tx:method name="alter*" />
+			<tx:method name="record*" />
+			<tx:method name="insert*" />
+			<tx:method name="create*" />
+			<tx:method name="update*" />
+			<tx:method name="save*" />
+			<tx:method name="move*" />
+			<tx:method name="remove*" />
+			<tx:method name="delete*" />
+			<tx:method name="drop*" />
+			<tx:method name="*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"
+		lazy-init="true">
+		<property name="nativeJdbcExtractor">
+			<ref local="nativeJdbcExtractor" />
+		</property>
+	</bean>
+
+	<!-- SqlMap setup for iBATIS Database Layer -->
+	<!-- <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean"> 
+		<property name="configLocation" value="classpath:sqlMapConfig.xml"/> <property 
+		name="lobHandler" ref="lobHandler" /> <property name="dataSource" ref="dataSource"/> 
+		</bean> -->
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+		<property name="typeAliasesPackage" value="com.dihaitech.wxshop.model" />
+		<property name="mapperLocations" value="classpath*:com/dihaitech/wxshop/dao//**/*.xml" />
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.dihaitech.wxshop.dao" />
+	</bean>
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+
+	<bean id="property" class="com.dihaitech.wxshop.common.Property">
+		<property name="BASE" value="${system.base}"></property>
+		<property name="PAGESIZE" value="${system.pageSize}"></property>
+		<property name="ACTION_EXT" value="${system.actionExt}"></property>
+		<property name="CHARSET" value="${system.charset}"></property>
+		<property name="COMP_NAME" value="${company.name}"></property>
+		<property name="SYSTEM_NAME" value="${system.name}"></property>
+		<property name="FILE_PATH" value="${filepath}"></property>
+		<property name="APP_PATH" value="${apppath}"></property>
+		<property name="IMG_RELATIVE_PATH" value="${imgpath}"></property>
+		<property name="MISC_FILE_PATH" value="${misc.filepath}"></property>
+		<property name="MISC_APP_PATH" value="${misc.apppath}"></property>
+		<!-- 产品库使用的配置begin -->
+		<property name="BG_IMG_PATH" value="${bg.img.path}"></property>
+		<property name="PRODUCT_IMGSIZE_ARRAY" value="${product.imgsize.array}"></property>
+		<property name="PRODUCT_IMGFILEPATH" value="${product.imgfilepath}"></property>
+		<property name="PRODUCT_IMGAPPPATH" value="${product.imgapppath}"></property>
+		<property name="DEFAULT_SCHEMA" value="${system.default-schema}"></property>
+		<property name="SYSTEM_TOP_DOMAIN" value="${system.top.domain}"></property>
+		<!-- 产品库使用的配置end -->
+		<!-- 图片上传预览相关配置 begin -->
+		<property name="FILE_UPLOAD_ROOTPATH" value="${file.upload.rootpath}"></property>
+		<property name="FILE_UPLOAD_ROOTURL" value="${file.upload.rooturl}"></property>
+		<property name="FILE_IMAG_UPLOADPATH" value="${file.imag.uploadpath}"></property>
+		<property name="FILE_IMAG_MAXSIZE" value="${file.imag.maxsize}"></property>
+		<property name="FILE_IMAG_TYPES" value="${file.imag.types}"></property>
+		<!-- 图片上传预览相关配置end -->
+		<!-- thrift begin -->
+		<property name="MANAGERCENTER_HOST" value="${managercenter.host}"></property>
+		<property name="MANAGERCENTER_PORT" value="${managercenter.port}"></property>
+		<property name="MANAGERCENTER_URL" value="${managercenter.url}"></property>
+		<!-- thrift end -->
+	</bean>
+	
+	<!-- 存放Service的Bean的配置文件 -->
+	<import resource="serviceContext.xml" />
+	<!-- 存放Action的Bean的配置文件 -->
+	<import resource="actionContext.xml" />
+
+	<!-- 存放DWR的Bean的配置文件 -->
+	<import resource="dwrContext.xml" />
+
+	<!-- 存放线程的配置文件 -->
+	<import resource="threadConfig.xml" />
+
+	<!-- 存放Quartz的配置文件 -->
+	<import resource="quartzConfig.xml" />
+
+
+</beans>

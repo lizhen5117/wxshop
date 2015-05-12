@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<!-- 处理邮件任务线程 -->
+	<!-- 
+	<bean id="dealMailTaskThread" class="cn.xdf.thread.DealMailTaskThread">
+		<property name="smtpTargetService" ref="smtpTargetService"></property>
+	</bean>
+	 -->
+</beans>

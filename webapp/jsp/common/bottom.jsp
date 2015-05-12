@@ -1,0 +1,1 @@
+<%@ page contentType="text/html;charset=UTF-8" %><%@ page import="com.dihaitech.wxshop.common.Property" %><div class="floor">本产品由 <%=Property.COMP_NAME%> 提供</div>

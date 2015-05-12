@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<!-- 清理缓存任务 -->
+	<!-- 
+	<bean id="clearCacheTask" class="com.yesky.background.task.ClearCacheTask">
+		<property name="sendEmailTempService" ref="sendEmailTempService"></property>
+		<property name="mailGroupService" ref="mailGroupService"></property>	
+		<property name="mailGroupUtil" ref="mailGroupUtil"></property>	
+		<property name="taskSuccService" ref="taskSuccService"></property>
+		<property name="taskFailService" ref="taskFailService"></property>
+	</bean>
+	 -->
+	
+	<!-- 定义调用对象和调用对象的方法 -->
+	<!--
+	<bean id="clearTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		
+		<property name="targetObject">
+			<ref bean="clearCacheTask" />
+		</property>
+		调用类中的方法 -->
+		<!--
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+	</bean>
+	 -->
+	<!-- 定义扫描可执行的邮件任务并加载的触发时间 -->
+	<!--
+	<bean id="clearTaskDoTime" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="clearTask" />
+		</property>
+		cron表达式，每天晚上23点30分 执行1次 --><!--
+		<property name="cronExpression">
+			
+			<value>0 30 23 * * ?</value>
+			 -->
+			 <!-- cron表达式，每5分钟执行1次 (未使用)-->
+			 <!-- 
+			<value>0 0/5 * * * ?</value>
+			 --><!--
+			 <value>0 36 14 * * ?</value>
+		</property>
+	</bean>
+	
+	总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序  --><!--
+	<bean id="startQuertz" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="clearTaskDoTime" />
+			</list>
+		</property>
+	</bean>
+	-->
+</beans>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<!-- 公用的Action Begin -->
+	<package name="struts-public-common" namespace=""
+		extends="struts-interceptor">
+		<!-- 登录登出的Action -->
+		<action name="login" class="login">
+			<result name="success" type="redirect">/jsp/main.jsp</result>
+			<result name="loginErr" type="dispatcher">/loginErr.jsp</result>
+			<result name="logOff" type="redirect">/logOff.jsp</result>
+			<interceptor-ref name="common-params" />
+		</action>
+	</package>
+	<!-- 公用的Action End -->
+
+    
+</struts>
