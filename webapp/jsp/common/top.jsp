@@ -1,8 +1,10 @@
-<%@ page contentType="text/html;charset=UTF-8" %><%@ include file="/jsp/common/taglibs.jsp"%><div id="topmenu" class="l-topmenu">
-    <div class="l-topmenu-logo"><%=Property.SYSTEM_NAME %></div>
-    <div class="l-topmenu-welcome">
-        <font class="l-link2" style="text-decoration:blink">欢迎您，${sessionScope.role.rolename }：${sessionScope.manager.nickname }</font>
-        <span class="space">|</span>
-        <a href="${base }/login!logOff.${actionExt}" class="l-link2">退出</a> 
-    </div> 
+<%@ page contentType="text/html;charset=UTF-8" %><%@ include file="/jsp/common/taglibs.jsp"%><div class="hudu-top">
+  <div class="hudu-menu">
+    <ul>
+      <li class="nav line-1"><dl><a href="#" class="list"></a></dl></li>
+      <li class="logo"><dl><a href="${base }" class="logo"><%=Property.SYSTEM_NAME %></a></dl></li>
+      <li class="nav line-2"><dl><a href="#" class="user"></a></dl></li>
+      <li class="nav line-2"><dl><a href="#" class="gouw"></a></dl></li>    
+    </ul>
+  </div>
 </div>
